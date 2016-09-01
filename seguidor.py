@@ -1,6 +1,6 @@
 import os
 import sys
-sys.path.insert(0, '/usr/share/sugar/activities/TurtleBots.activity/plugins/butia')
+sys.path.insert(0, '/home/darthkpo/Documentos/python')
 
 from pybot import usb4butia
 import nxt.locator
@@ -21,7 +21,7 @@ def close_hand(b):
 
 def open_hand(b):
     m_left = Motor(b, PORT_A)
-    m_left.turn(8, 84)
+    m_left.turn(16, 84)
 
 def clear() :
 	os.system('clear')
@@ -66,7 +66,7 @@ def getAverage(rt,port1,port2) :
 def followLine(rt,values,greySensor1,greySensor2) :
 	if(rt.getGray(greySensor1) < values[0] and rt.getGray(greySensor2) < values[1]) :
 
-		rt.set2MotorSpeed(1, 500, 1, 500)
+		rt.set2MotorSpeed(1, 500, 1, 500 - 250)
 
 	else :
 
@@ -82,18 +82,26 @@ zigzagspeed = 300
 def zigzag():
 	print "Initial turn.."
 	robot.set2MotorSpeed(1, zigzagspeed, 0, zigzagspeed)
-	while robot.getDistance(d_left) > 45000:
+	while robot.getDistance(d_left) > 28000:
 		pass
 	print "Aligned 90 degree!"
-	while robot.getDistance(d_right) > 45000:
-		robot.set2MotorSpeed(0, zigzagspeed + 600, 1, zigzagspeed - 200)
-		while robot.getDistance(d_left) < 45000 and robot.getDistance(d_right) > 45000:
+	while robot.getDistance(d_right) > 28000:
+		robot.set2MotorSpeed(0, zigzagspeed + 700, 1, zigzagspeed - 250)
+		while robot.getDistance(d_left) < 45000 and robot.getDistance(d_right) > 28000:
 			pass
+		sleep(0.4)
 		robot.set2MotorSpeed(1, zigzagspeed, 1, zigzagspeed)
-		while robot.getDistance(d_left) > 45000 and robot.getDistance(d_right) > 45000:
-			pass                        
-	robot.set2MotorSpeed(0, 0, 0, 0)
-	sys.exit()
+		while robot.getDistance(d_left) > 45000 and robot.getDistance(d_right) > 28000:
+			pass
+	while robot.getDistance(d_left) >45000:
+		robot.set2MotorSpeed(1, zigzagspeed - 250, 0, zigzagspeed + 700)
+		while robot.getDistance(d_right) < 45000 and robot.getDistance(d_left) > 45000:
+			pass
+		sleep(0.4)
+		robot.set2MotorSpeed(1, zigzagspeed, 1, zigzagspeed)
+		while robot.getDistance(d_right) > 45000 and robot.getDistance(d_left) > 45000:
+			pass
+	
 
 gtspeed = 200
 def get_thrash(values,greySensor1,greySensor2):
@@ -103,7 +111,7 @@ def get_thrash(values,greySensor1,greySensor2):
 	while dist > 38000:
 		dist = robot.getDistance(d_adelante)
 	print dist
-	robot.set2MotorSpeed(1,gtspeed,1,gtspeed + 150)
+	robot.set2MotorSpeed(1,gtspeed,1,gtspeed + 100)
 	dist = robot.getDistance(d_adelante)
 	while dist > 22000:
 		dist = robot.getDistance(d_adelante)
@@ -132,7 +140,7 @@ got_thrash = True
 while(True) :
 	
 	if got_thrash and robot.getDistance(d_right) < 45000:
-		get_thrash(result,5,6)
+		#get_thrash(result,5,6)
 		got_thrash = False
 	if robot.getDistance(d_adelante) < 30000:
 		zigzag()
