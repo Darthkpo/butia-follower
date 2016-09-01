@@ -1,6 +1,6 @@
 import os
 import sys
-sys.path.insert(0, '/home/darthkpo/Documentos/python')
+sys.path.insert(0, '/usr/share/sugar/activities/TurtleBots.activity/plugins/butia')
 
 from pybot import usb4butia
 import nxt.locator
@@ -85,47 +85,58 @@ def zigzag():
 	while robot.getDistance(d_left) > 28000:
 		pass
 	print "Aligned 90 degree!"
-	while robot.getDistance(d_right) > 28000:
+	turn_counter = 0
+	while turn_counter <= 4 or robot.getDistance(d_right) > 28000:
+		print "first stage"
 		robot.set2MotorSpeed(0, zigzagspeed + 700, 1, zigzagspeed - 250)
-		while robot.getDistance(d_left) < 45000 and robot.getDistance(d_right) > 28000:
+		while robot.getDistance(d_left) < 45000 and robot.getDistance(d_right) > 28000 and turn_counter <= 4:
 			pass
 		sleep(0.4)
+		turn_counter += 1
+		print turn_counter
 		robot.set2MotorSpeed(1, zigzagspeed, 1, zigzagspeed)
-		while robot.getDistance(d_left) > 45000 and robot.getDistance(d_right) > 28000:
+		while robot.getDistance(d_left) > 45000 and robot.getDistance(d_right) > 28000 and turn_counter <= 4:
 			pass
-	while robot.getDistance(d_left) >45000:
+	print "fix burn..."
+	robot.set2MotorSpeed(1, zigzagspeed - 250, 0, zigzagspeed + 700)
+	sleep(0.5)
+	print "second stage"
+	while robot.getDistance(d_left) > 28000:
 		robot.set2MotorSpeed(1, zigzagspeed - 250, 0, zigzagspeed + 700)
-		while robot.getDistance(d_right) < 45000 and robot.getDistance(d_left) > 45000:
+		while robot.getDistance(d_right) < 45000 and robot.getDistance(d_left) > 28000:
 			pass
 		sleep(0.4)
 		robot.set2MotorSpeed(1, zigzagspeed, 1, zigzagspeed)
-		while robot.getDistance(d_right) > 45000 and robot.getDistance(d_left) > 45000:
+		while robot.getDistance(d_right) > 45000 and robot.getDistance(d_left) > 28000:
 			pass
 	
 
 gtspeed = 200
 def get_thrash(values,greySensor1,greySensor2):
 	print "getting thrash..."
+	robot.set2MotorSpeed(0,gtspeed+500,0,gtspeed+500)
+	sleep(1.5)
 	robot.set2MotorSpeed(1, gtspeed, 0, gtspeed)
 	dist = robot.getDistance(d_adelante)
-	while dist > 38000:
+	while dist > 48000:
 		dist = robot.getDistance(d_adelante)
 	print dist
-	robot.set2MotorSpeed(1,gtspeed,1,gtspeed + 100)
+	robot.set2MotorSpeed(1,gtspeed,1,gtspeed+40)
 	dist = robot.getDistance(d_adelante)
-	while dist > 22000:
+	while dist > 25000:
 		dist = robot.getDistance(d_adelante)
-	print dist
-	sleep(0.6)
+	sleep(1.2)
 	robot.set2MotorSpeed(0,0,0,0)
 	close_hand(b)
-	robot.set2MotorSpeed(0,gtspeed,0,gtspeed)
+	robot.set2MotorSpeed(1,gtspeed+500,0,gtspeed+500)
+	sleep(1)
+	robot.set2MotorSpeed(0,gtspeed + 500,0,gtspeed + 500)
 	while True:
 		print robot.getGray(greySensor1), robot.getGray(greySensor2)
 		if robot.getGray(greySensor1) > values[0] - 3000 or robot.getGray(greySensor2) > values[1] - 3000:
 			break
 
-	robot.set2MotorSpeed(0, gtspeed + 300, 1, gtspeed + 300)
+	robot.set2MotorSpeed(0, gtspeed + 500, 1, gtspeed + 500)
 	sleep(0.6)
 
 if(sys.argv[1] == "-g") :
@@ -140,8 +151,8 @@ got_thrash = True
 while(True) :
 	
 	if got_thrash and robot.getDistance(d_right) < 45000:
-		#get_thrash(result,5,6)
+		get_thrash(result,5,6)
 		got_thrash = False
-	if robot.getDistance(d_adelante) < 30000:
-		zigzag()
+	#if robot.getDistance(d_adelante) < 30000:
+		#zigzag()
 	followLine(robot,result,5,6)
